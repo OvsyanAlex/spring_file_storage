@@ -1,0 +1,1 @@
+rootProject.name = "spring_file_storage"
