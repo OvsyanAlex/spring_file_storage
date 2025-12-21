@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+   url: jdbc:postgresql://localhost:5432/postgres
+   driver-class-name: org.postgresql.Driver
+   username: admin
+   password: secretpassword
+  flyway:
+   enabled: true
+
+minio:
+  url: http://localhost:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket: my-bucket
+
+jwt:
+  password:
+    encoder:
+      secret: FZK2DZ82odqS13e8aENggaMbb_fAkl-nJL4AEVBX43g
+      iteration: 64
+      keylength: 256
+  secret: b5f59337a612a2a7dc07328f3e7d1a04722967c7f06df20a499a7d3f91ff2a7e
+  expiration: 3600
+  issuer: proselyte
+
+#springdoc.enable-hateoas=false
+#springdoc.api-docs.path=/v3/api-docs
+#springdoc.swagger-ui.path=/swagger-ui.html
+#http://localhost:8080/swagger-ui.html
