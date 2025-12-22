@@ -4,3 +4,5 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/mydb
 не нужно в коде запускать миграцию, она запускается сама перед hibernate, нужна зависимость и верное расположение файлов resources/db/migration
 implementation("org.flywaydb:flyway-core")
 Для PostgreSQL иногда также нужно: implementation("org.flywaydb:flyway-database-postgresql")
+
+подключение minio в powershift: minio server C:\minio\data --console-address :9001

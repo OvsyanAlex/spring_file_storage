@@ -28,18 +28,17 @@ public class WebSecurityConfig {
     @Value("${jwt.secret}")     // ключ для подписи JWT, берётся из application.properties или application.yml
     private String secret;
 
-    private final String[] publicRoutes = {"/api/v1/auth/register", "/api/v1/auth/login"}; // массив URL, доступных без авторизации
 
     @Bean // бин настраивает цепочку фильтров безопасности для WebFlux
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, AuthenticationManager authenticationManager) {
         return http
                 .csrf(csrfSpec -> csrfSpec.disable()) // CSRF отключён, это нормально, если фронт отдельный и используется JWT
                 .authorizeExchange(ex -> ex
-                        .pathMatchers(HttpMethod.OPTIONS).permitAll()
-                        .pathMatchers(publicRoutes).permitAll() // Эндпоинты в publicRoutes разрешены всем
-                        .anyExchange().authenticated())         // Остальные запросы требуют авторизации
-                .exceptionHandling(ex -> ex
+                        .pathMatchers("/api/v1/auth/**").permitAll()
+                        .pathMatchers("/api/v1/**").authenticated()
+                        .anyExchange().authenticated())
 
+                .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((swe, e) -> // если пользователь не авторизован → 401
                                 Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED)))
 
@@ -74,7 +73,10 @@ public class WebSecurityConfig {
     private AuthenticationWebFilter bearerAuthenticationFilter(AuthenticationManager authenticationManager) {
         AuthenticationWebFilter bearerAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
         bearerAuthenticationFilter.setServerAuthenticationConverter(new BearerTokenServerAuthenticationConverter(new JwtHandler(secret)));
-        bearerAuthenticationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers("/api/v1/protected/**"));
+        bearerAuthenticationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers(
+                "/api/v1/users/**",
+                "/api/v1/files/**",
+                "/api/v1/events/**"));
 
         return bearerAuthenticationFilter;
     }

@@ -5,10 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.example.dto.UserDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.example.service.UserService;
-import jakarta.validation.Valid;
-import org.springframework.web.server.ResponseStatusException;
+
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
@@ -21,6 +21,10 @@ public class UserControllerV1 {
     private final UserService userService;
 
     @GetMapping("/{id}")
+//    @PreAuthorize(
+//            "hasAuthority('USER_READ_ALL') or " +
+//            "(hasAuthority('USER_READ_SELF') and #userId == authentication.principal.id)"
+//    )
     public Mono<UserDto> getUser(@PathVariable("id") Integer userId) {
 
         return userService.findById(userId);

@@ -2,6 +2,7 @@ package org.example.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.example.exception.AuthException;
 import org.example.model.Status;
@@ -12,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Component
@@ -30,8 +33,11 @@ public class SecurityService {
 
 
     private TokenDetails generateToken(UserEntity user) {
+        Role role = Role.valueOf(String.valueOf(user.getRole()));
+        List<Permission> permissions = new ArrayList<>(role.getPermissions());
+
         Map<String, Object> claims = new HashMap<>() {{
-            put("role", user.getRole());
+            put("permissions", permissions);
             put("username", user.getUserName());
         }};
         return generateToken(claims, user.getId().toString());
@@ -45,6 +51,7 @@ public class SecurityService {
     }
 
     private TokenDetails generateToken(Date expirationDate, Map<String, Object> claims, String subject) {
+        SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         Date createdDate = new Date();
         String token = Jwts.builder()
                 .setClaims(claims)
@@ -53,7 +60,7 @@ public class SecurityService {
                 .setIssuedAt(createdDate)
                 .setId(UUID.randomUUID().toString())
                 .setExpiration(expirationDate)
-                .signWith(SignatureAlgorithm.HS256, Base64.getEncoder().encodeToString(secret.getBytes()))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
 
         return TokenDetails.builder()

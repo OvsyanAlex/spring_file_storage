@@ -21,12 +21,13 @@ public class UserAuthenticationBearer  {
         String subject = claims.getSubject();
         Integer principalId = Integer.parseInt(subject);
 
-        String role = claims.get("role", String.class);
+        List<Permission> permissions = claims.get("permissions", List.class);
         String username = claims.get("username", String.class);
 
         // SimpleGrantedAuthority — стандартная реализация GrantedAuthority
         // Spring Security работает только с GrantedAuthority. Значение: "ROLE_USER", "ROLE_ADMIN"
-        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
+        List<SimpleGrantedAuthority> authorities = permissions.stream()
+                .map(permission -> new SimpleGrantedAuthority(permission.name())).toList();
 
         // CustomPrincipal — доменный объект пользователя
         CustomPrincipal principal = new CustomPrincipal(principalId, username);
