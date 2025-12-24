@@ -3,14 +3,13 @@ package org.example.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.example.dto.Event;
-import org.example.dto.RegistrationUserDto;
+import org.example.dto.RegistrUserDto;
 import org.example.dto.UserDto;
 import org.example.model.EventEntity;
 import org.example.model.Status;
 import org.example.model.UserEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 
 import java.util.ArrayList;
@@ -47,17 +46,18 @@ public class UserMapper {
 
     public UserEntity userToEntity(UserDto userDto) {
         UserEntity userEntity = new UserEntity();
+        userEntity.setId(userDto.getId());
         userEntity.setUserName(userDto.getUserName());
         userEntity.setStatus(userDto.getStatus());
         return userEntity;
     }
 
-    public UserEntity registrationUserDto(RegistrationUserDto registrationUserDto) {
+    public UserEntity registrationUserDto(RegistrUserDto registrUserDto) {
         return new UserEntity()
                 .toBuilder()
-                .userName(registrationUserDto.getUsername())
-                .role(registrationUserDto.getRole())
-                .password(passwordEncoder.encode(registrationUserDto.getPassword()))
+                .userName(registrUserDto.getUsername())
+                .role(registrUserDto.getRole())
+                .password(passwordEncoder.encode(registrUserDto.getPassword()))
                 .status(Status.ACTIVE)
                 .build();
     }

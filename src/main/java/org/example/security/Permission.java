@@ -4,6 +4,7 @@ public enum Permission {
     USER_READ_SELF,
     USER_READ_ALL,
     USER_UPLOAD_ALL,
+    USER_DELETE_ALL,
 
     EVENT_READ_SELF,
     EVENT_READ_ALL,

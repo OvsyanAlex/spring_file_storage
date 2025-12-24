@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.AuthRequestDto;
 import org.example.dto.AuthResponseDto;
-import org.example.dto.RegistrationUserDto;
+import org.example.dto.RegistrUserDto;
 import org.example.dto.UserDto;
 import org.example.security.SecurityService;
 import org.example.service.UserService;
@@ -23,13 +23,13 @@ public class AuthControllerV1 {
     private final SecurityService securityService;
 
     @PostMapping("/register")
-    public Mono<UserDto> register(@RequestBody @Valid RegistrationUserDto registrationRequestDto) {
+    public Mono<UserDto> register(@RequestBody @Valid RegistrUserDto registrationRequestDto) {
 
         return userService.registerUser(registrationRequestDto);
     }
 
     @PostMapping("/login")
-    public Mono<AuthResponseDto> login(@RequestBody AuthRequestDto authRequestDto) {
+    public Mono<AuthResponseDto> login(@RequestBody @Valid AuthRequestDto authRequestDto) {
         return securityService.authenticate(authRequestDto.getUsername(), authRequestDto.getPassword())
                 .flatMap(tokenDetails -> Mono.just(
                         AuthResponseDto.builder()
