@@ -2,7 +2,9 @@ package org.example.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
 import io.jsonwebtoken.security.Keys;
+
 import lombok.RequiredArgsConstructor;
 import org.example.exception.AuthException;
 import org.example.model.Status;
@@ -13,14 +15,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
+
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+
 import java.util.*;
 
 @Component
 @RequiredArgsConstructor
 public class SecurityService {
+
     // создание токена и аутентификация по логину/паролю, отдаем JWT пользователю
+
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
@@ -33,6 +39,7 @@ public class SecurityService {
 
 
     private TokenDetails generateToken(UserEntity user) {
+
         Role role = Role.valueOf(String.valueOf(user.getRole()));
         List<Permission> permissions = new ArrayList<>(role.getPermissions());
 
@@ -51,6 +58,7 @@ public class SecurityService {
     }
 
     private TokenDetails generateToken(Date expirationDate, Map<String, Object> claims, String subject) {
+
         SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         Date createdDate = new Date();
         String token = Jwts.builder()
@@ -77,6 +85,7 @@ public class SecurityService {
                         return Mono.error(new AuthException("Account disabled", "PROSELYTE_USER_ACCOUNT_DISABLED"));
                     }
                     // matches - хеширует введённый пароль - сравнивает с хешем в БД
+
                     if (!passwordEncoder.matches(password, user.getPassword())) {
                         return Mono.error(new AuthException("Invalid password", "PROSELYTE_INVALID_PASSWORD"));
                     }

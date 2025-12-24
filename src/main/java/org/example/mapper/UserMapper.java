@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,7 @@ public class UserMapper {
 
     public UserEntity userToEntity(UserDto userDto) {
         UserEntity userEntity = new UserEntity();
+
         userEntity.setId(userDto.getId());
         userEntity.setUserName(userDto.getUserName());
         userEntity.setStatus(userDto.getStatus());

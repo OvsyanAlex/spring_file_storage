@@ -23,5 +23,4 @@ public class UserDto {
         this.userName = userName;
         this.status = status;
     }
-
 }

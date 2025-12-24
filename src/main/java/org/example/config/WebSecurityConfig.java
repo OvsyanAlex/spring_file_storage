@@ -46,6 +46,7 @@ public class WebSecurityConfig {
                                 Mono.fromRunnable(() -> swe.getResponse().setStatusCode(HttpStatus.FORBIDDEN))))
 
                 .addFilterAt( // фильтр, который обрабатывает аутентификацию = JWT
+
                         bearerAuthenticationFilter(authenticationManager),
                         SecurityWebFiltersOrder.AUTHENTICATION)
                 .build();
@@ -77,6 +78,7 @@ public class WebSecurityConfig {
                 "/api/v1/users/**",
                 "/api/v1/files/**",
                 "/api/v1/events/**"));
+
 
         return bearerAuthenticationFilter;
     }

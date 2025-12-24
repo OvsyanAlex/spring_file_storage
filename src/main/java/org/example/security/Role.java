@@ -1,5 +1,6 @@
 package org.example.security;
 
+
 import java.util.Set;
 
 public enum Role {
@@ -33,5 +34,4 @@ public enum Role {
     public Set<Permission> getPermissions() {
         return permissions;
     }
-
 }

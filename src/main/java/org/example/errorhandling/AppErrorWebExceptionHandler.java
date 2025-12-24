@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
+
 @Component // перехватчик всех исключений в WebFlux, который превращает их в единый JSON-ответ
 public class AppErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
     public AppErrorWebExceptionHandler(AppErrorAttributes g, ApplicationContext applicationContext, ServerCodecConfigurer serverCodecConfigurer) {

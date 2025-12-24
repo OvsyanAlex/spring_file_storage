@@ -10,8 +10,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
+
 // PBKDF2 — это алгоритм вывода ключа из пароля, специально создан для: защиты от brute-force, защиты от rainbow tables
 // безопасное хеширование паролей и их проверку при логине
+
 @Component
 public class PBFDK2Encoder implements PasswordEncoder {
 

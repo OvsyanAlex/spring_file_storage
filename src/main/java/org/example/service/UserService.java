@@ -1,8 +1,11 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
+
 import org.example.dto.RegistrUserDto;
 import org.example.dto.UpdateUserRequestDto;
+
+
 import org.example.dto.UserDto;
 import org.example.mapper.UserMapper;
 import org.example.model.UserEntity;
@@ -15,7 +18,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.List;
 
 
 @Service
@@ -26,6 +28,7 @@ public class UserService {
     private final UserMapper userMapper;
 
     public Mono<UserDto> findById(Integer userId) {
+
         return Mono.fromCallable(() -> userRepository.findByIdWithEvents(userId)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
                 .map(userMapper::entityToUser)
@@ -40,13 +43,16 @@ public class UserService {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
+
     public Mono<UserDto> registerUser(RegistrUserDto registrUserDto) {
         UserEntity userEntity = userMapper.registrationUserDto(registrUserDto);
+
 
         return Mono.fromCallable(() -> userRepository.save(userEntity))
                 .map(userMapper::entityToUser)
                 .subscribeOn(Schedulers.boundedElastic());
     }
+
 
     public Mono<Void> delete(Integer userId) {
         return findById(userId)
@@ -73,4 +79,3 @@ public class UserService {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 }
-
