@@ -61,14 +61,16 @@ public class UserService {
     }
 
     public Mono<UserDto> update(UpdateUserRequestDto updateUserRequestDto, Integer userId) {
-        return findById(userId)
-                .flatMap(existingUserDto -> {
-                    existingUserDto.setUserName(updateUserRequestDto.getUsername());
-                    existingUserDto.setStatus(updateUserRequestDto.getStatus());
-                    return Mono.fromCallable(() -> userRepository.save(userMapper.userToEntity(existingUserDto)))
+        return Mono.fromCallable(() -> userRepository.findByIdWithEvents(userId).orElseThrow(() ->
+                                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")))
+                .subscribeOn(Schedulers.boundedElastic())
+                .flatMap(userEntity -> {
+                    userEntity.setUserName(updateUserRequestDto.getUsername());
+                    userEntity.setStatus(updateUserRequestDto.getStatus());
+
+                    return Mono.fromCallable(() -> userRepository.save(userEntity))
                             .subscribeOn(Schedulers.boundedElastic());
-                })
-                .map(userMapper::entityToUser);
+                }).map(userMapper::entityToUser);
     }
 
     public Flux<UserDto> findAll() {

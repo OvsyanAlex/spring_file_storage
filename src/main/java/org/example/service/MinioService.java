@@ -2,39 +2,42 @@ package org.example.service;
 
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferFactory;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import org.springframework.core.io.buffer.DataBufferUtils;
-
-
 import java.io.IOException;
+import java.util.UUID;
 
-import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
 
 @Service
 public class MinioService {
 
     private final S3Client s3Client;
+    private final DataBufferFactory dataBufferFactory;
 
     @Value("${minio.bucket}")
     private String bucketName;
 
-    public MinioService(S3Client s3Client) {
+    public MinioService(S3Client s3Client, DataBufferFactory dataBufferFactory) {
         this.s3Client = s3Client;
+        this.dataBufferFactory = dataBufferFactory;
     }
 
-    public Mono<String> uploadMultipartFile(FilePart filePart) throws IOException {
+    public Mono<String> uploadMultipartFile(FilePart filePart)  {
+        String path = UUID.randomUUID() + "-" + filePart.filename();
         return DataBufferUtils.join(filePart.content()) // Mono<DataBuffer>
                 .flatMap(dataBuffer -> {
                     byte[] bytes = new byte[dataBuffer.readableByteCount()];
@@ -57,13 +60,26 @@ public class MinioService {
                 });
     }
 
-    public ResponseInputStream<GetObjectResponse> getFile(String key) {
-        GetObjectRequest request = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build();
-
-        return s3Client.getObject(request);
+    public Flux<DataBuffer> getFile(String key) {
+        return Flux.using(() -> {
+                    GetObjectRequest request = GetObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(key)
+                            .build();
+                    return s3Client.getObject(request);
+                },
+                inputStream ->
+                        DataBufferUtils.readInputStream(
+                                () -> inputStream,
+                                dataBufferFactory,
+                                16 * 1024
+                        ),
+                inputStream -> {
+                    try {
+                        inputStream.close();
+                    } catch (IOException ignored) {}
+                }
+        ).subscribeOn(Schedulers.boundedElastic());
     }
 
     public Mono<Void> deleteFile(String minioPath) {
@@ -74,6 +90,6 @@ public class MinioService {
                     .build();
 
             s3Client.deleteObject(request);
-        });
+        }).subscribeOn(Schedulers.boundedElastic()).then();
     }
 }

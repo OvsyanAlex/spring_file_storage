@@ -18,7 +18,8 @@ public enum Role {
             Permission.EVENT_WRITE_ALL,
             Permission.EVENT_DELETE_ALL,
 
-            Permission.FILE_UPLOAD_SELF,
+//            Permission.FILE_UPLOAD_SELF,
+            Permission.FILE_UPLOAD_ALL,
             Permission.FILE_READ_ALL,
             Permission.FILE_DELETE_ALL
     )),

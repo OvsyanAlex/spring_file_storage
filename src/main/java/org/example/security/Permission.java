@@ -12,6 +12,7 @@ public enum Permission {
     EVENT_DELETE_ALL,
 
     FILE_UPLOAD_SELF,
+    FILE_UPLOAD_ALL,
     FILE_READ_ALL,
     FILE_DELETE_ALL
 }

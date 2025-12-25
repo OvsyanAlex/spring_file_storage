@@ -23,6 +23,7 @@ public class FileService {
     private final FileMapper fileMapper;
 
     public Mono<FileDto> findById(Integer fileId) {
+
         return Mono.fromCallable(() -> fileRepository.findById(fileId)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)))
                 .map(fileMapper::entityToFile)
@@ -37,4 +38,10 @@ public class FileService {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
+    public Mono<Void> deleteById(Integer fileId) {
+
+        return Mono.fromRunnable(() -> fileRepository.deleteById(fileId))
+                .subscribeOn(Schedulers.boundedElastic())
+                .then();
+    }
 }
