@@ -22,7 +22,7 @@ dependencies {
     implementation 'org.flywaydb:flyway-database-postgresql'
     implementation 'org.flywaydb:flyway-core'
 
-//    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.13'
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.13'
 
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.6'

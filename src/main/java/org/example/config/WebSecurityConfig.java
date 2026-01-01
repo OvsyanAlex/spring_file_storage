@@ -34,7 +34,11 @@ public class WebSecurityConfig {
         return http
                 .csrf(csrfSpec -> csrfSpec.disable()) // CSRF отключён, это нормально, если фронт отдельный и используется JWT
                 .authorizeExchange(ex -> ex
-                        .pathMatchers("/api/v1/auth/**").permitAll()
+                        .pathMatchers(
+                                "/api/v1/auth/**",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
                         .pathMatchers("/api/v1/**").authenticated()
                         .anyExchange().authenticated())
 
@@ -75,9 +79,7 @@ public class WebSecurityConfig {
         AuthenticationWebFilter bearerAuthenticationFilter = new AuthenticationWebFilter(authenticationManager);
         bearerAuthenticationFilter.setServerAuthenticationConverter(new BearerTokenServerAuthenticationConverter(new JwtHandler(secret)));
         bearerAuthenticationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers(
-                "/api/v1/users/**",
-                "/api/v1/files/**",
-                "/api/v1/events/**"));
+                "/api/v1/**"));
 
 
         return bearerAuthenticationFilter;

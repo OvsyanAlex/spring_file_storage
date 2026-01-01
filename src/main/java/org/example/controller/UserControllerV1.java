@@ -32,7 +32,9 @@ public class UserControllerV1 {
     @GetMapping()
     @PreAuthorize("hasAuthority('USER_READ_ALL')")
     public Flux<UserDto> findAll() {
-
+        // Publisher - возвращает Flux<UserDto> — Flux ленивый, пока не будет подписки
+        // Subscriber Spring WebFlux + HTTP клиент — потребляет данные
+        // Spring создаёт Subscriber, который получает элементы и отдает их в HTTP-ответ по мере поступления
         return userService.findAll();
     }
 

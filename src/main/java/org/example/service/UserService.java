@@ -60,10 +60,14 @@ public class UserService {
                         .subscribeOn(Schedulers.boundedElastic())).then();
     }
 
+//    Subscriber создаётся автоматически WebFlux при HTTP-запросе
     public Mono<UserDto> update(UpdateUserRequestDto updateUserRequestDto, Integer userId) {
+
+        // оборачиваем блокирующий userRepository.findByIdWithEvents в реактивный поток
         return Mono.fromCallable(() -> userRepository.findByIdWithEvents(userId).orElseThrow(() ->
                                         new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")))
                 .subscribeOn(Schedulers.boundedElastic())
+                // flatMap создаёт новый Publisher (Mono) для сохранения сущности
                 .flatMap(userEntity -> {
                     userEntity.setUserName(updateUserRequestDto.getUsername());
                     userEntity.setStatus(updateUserRequestDto.getStatus());
